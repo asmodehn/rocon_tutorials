@@ -1,3 +1,7 @@
-subscribers: []
-publishers: []
+subscribers:
+    - name: turtle_stroll/pose
+      type: turtlesim/Pose
+publishers:
+    - name: turtle_stroll/cmd_vel
+      type: geometry_msgs/Twist
 services: []

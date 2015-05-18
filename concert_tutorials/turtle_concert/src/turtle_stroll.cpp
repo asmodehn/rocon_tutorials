@@ -28,9 +28,15 @@ bool g_first_goal_set = false;
 
 #define PI 3.141592
 
+
+  ros::Publisher g_pose_pub;
+  ros::Publisher g_twist_pub;
+
+
 void poseCallback(const turtlesim::PoseConstPtr& pose)
 {
   g_pose = pose;
+  g_pose_pub.publish(pose);
 }
 
 bool hasReachedGoal()
@@ -55,6 +61,7 @@ void commandTurtle(ros::Publisher twist_pub, float linear, float angular)
   twist.linear.x = linear;
   twist.angular.z = angular;
   twist_pub.publish(twist);
+  g_twist_pub.publish(twist);
 }
 
 void stopForward(ros::Publisher twist_pub)
@@ -174,6 +181,10 @@ int main(int argc, char** argv)
   ros::NodeHandle snh(simulation_namespace);
   ros::Subscriber pose_sub = snh.subscribe("pose", 1, poseCallback);
   ros::Publisher twist_pub = snh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
+
+
+  g_pose_pub = pnh.advertise<turtlesim::Pose>("pose", 1);
+  g_twist_pub = pnh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
 
   ros::NodeHandle nh;
   ros::Timer timer = nh.createTimer(ros::Duration(0.016), boost::bind(timerCallback, _1, twist_pub));
